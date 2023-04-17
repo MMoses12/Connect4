@@ -1,0 +1,42 @@
+On your turn, drop a checker down any slot on the grid and play
+alternates until one player gets four checkers in a row. 
+
+In order to make a move double click the column you want to play or 
+press the appropriate key from keyboard (from 0 to 6). The keyboard
+number can be from the standard numbers or the numpad of the keyboard. 
+  
+
+Be the first to connect 4 checkers in a row horizontally, vertically or diagonally. 
+
+2 Player mode: 
+
+	- Players decide who begins. 
+
+	- Players alternate between turns in playing a checker. 
+
+ 
+
+AI mode: 
+
+	- 3 difficulties: (Trivial/Easy, Medium and Hard). 
+
+	- AI begins first. To change it select  “You“ in 1st Player. 
+
+ 
+
+AI uses MinMax algorithm with Alpha-Beta pruning modification. 
+
+In easy mode the depth of MinMax is 1, in medium it is 3 and in
+Hard it is 5. 
+
+
+Dark Mode is selected option. To use Light Mode press the Light
+Mode button at the right on the MenuBar. 
+
+In History you can see every game played and if you press on the
+game it shows you a representation of how the game was played. 
+
+PS: Key to winning is to anticipate your opponent's moves, keep
+your positions in the middle, keep an eye out for game winning
+spaces, do not play directly below game ending spaces and much
+more. 
