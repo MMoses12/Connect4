@@ -1,20 +1,30 @@
 package ce326.hw3;
 
+import java.util.ArrayList;
+
 public class board {
     static int board[][];
     static int colPlayed[];
     static int player;
 	static boolean gameEnded;
 	static boolean AIOpp = true;
+	static boolean playerFirst;
+	static ArrayList<Integer> moveList;
 
 	// The board constructor.
     public board () {
         board = new int [6][7];
         colPlayed = new int [7]; 
-		if (app.rad2.isSelected())
+		if (app.rad2.isSelected()) {
 			player = 2;
-		else
+			playerFirst = false;
+		}
+		else {
 			player = 1;
+			playerFirst = true;
+		}
+		
+		moveList = new ArrayList<Integer>();
 
 		gameEnded = false;
     }
@@ -30,12 +40,14 @@ public class board {
         colPlayed[col] ++;
 		app.determinePiece(col);
 
+		moveList.add(col);
+
 		if (isFull())
 			app.makeWindow("Tie!");
 
-		changePlayer();
+		checkWin(colPlayed[col]-1, col);
 
-        checkWin(colPlayed[col]-1, col);
+		changePlayer();
     }
 
 	// Check if the board is full.
@@ -88,6 +100,7 @@ public class board {
 		}
 		if (checkWin == 4) {
 			gameEnded = true;
+			fileSystem.makeFile();
 			app.gameOverDialog();
 			return;
 		}
@@ -106,6 +119,7 @@ public class board {
 		if (checkWin == 4) {
 			gameEnded = true;
 			app.gameOverDialog();
+			fileSystem.makeFile();
 			return;
 		}
 	 
@@ -122,6 +136,7 @@ public class board {
 				checkWin++;
 				if (checkWin == 4) {
 					gameEnded = true;
+					fileSystem.makeFile();
 					app.gameOverDialog();
 					return;
 				}
@@ -145,6 +160,7 @@ public class board {
 				checkWin++;
 				if (checkWin == 4) {
 					gameEnded = true;
+					fileSystem.makeFile();
 					app.gameOverDialog();
 					return;
 				}

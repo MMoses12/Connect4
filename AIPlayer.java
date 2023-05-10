@@ -4,8 +4,10 @@ public class AIPlayer {
 
 	// MinMax algorithm with alpha beta pruning.
 	public static int minimaxAB(int depth, int alpha, int beta, boolean maximizingPlayer) {
-		// If depth equals zero or board is full.
-		if (depth == 0 || board.isFull()) {
+		int score = evaluateScore();
+
+		// If depth equals zero or board is full return the evaluation of the board.		
+		if (depth == 0 || board.isFull() || score > 10000 || score < -10000) {
 			return evaluateScore();
 		}
 	
@@ -16,16 +18,18 @@ public class AIPlayer {
 				if (board.colPlayed[col] == 6) {
 					continue;
 				}
-				int row = board.colPlayed[col];
-				board.board[row][col] = board.player;
+
+				board.board[board.colPlayed[col]][col] = 2;
 				board.colPlayed[col]++;
-	
+
 				int value = minimaxAB(depth - 1, alpha, beta, false);
 
 				board.colPlayed[col]--;
-				board.board[row][col] = 0;
+				board.board[board.colPlayed[col]][col] = 0;
 	
-				bestValue = Math.max(bestValue, value);
+				if (value > bestValue) {
+					bestValue = value;
+				}
 				alpha = Math.max(alpha, bestValue);
 				if (beta <= alpha) {
 					break;
@@ -39,22 +43,24 @@ public class AIPlayer {
 				if (board.colPlayed[col] == 6) {
 					continue;
 				}
-				int row = board.colPlayed[col];
-				board.board[row][col] = (board.player == 1) ? 2 : 1;
+
+				board.board[board.colPlayed[col]][col] = 1;
 				board.colPlayed[col]++;
-	
+
 				int value = minimaxAB(depth - 1, alpha, beta, true);
 				
 				board.colPlayed[col]--;
-				board.board[row][col] = 0;
+				board.board[board.colPlayed[col]][col] = 0;
 	
-				bestValue = Math.min(bestValue, value);
-
+				if (value < bestValue) {
+					bestValue = value;
+				}
 				beta = Math.min(beta, bestValue);
 				if (beta <= alpha) {
 					break;
 				}
 			}
+
 			return bestValue;
 		}
 	}
@@ -64,23 +70,28 @@ public class AIPlayer {
 		int bestValue = -Integer.MAX_VALUE;
 		int bestMove = -1;
 		int moveValue;
+		int alpha = Integer.MIN_VALUE, beta = Integer.MAX_VALUE;
 	
 		for (int col = 0; col < 7; col++) {
 			if (board.colPlayed[col] == 6) {
 				continue; // column is full, cannot play here
 			}
 			
-			board.board[board.colPlayed[col]][col] = board.player;
+			board.board[board.colPlayed[col]][col] = 2;
 			board.colPlayed[col]++;
-	
-			moveValue = minimaxAB(depth, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
+
+			moveValue = minimaxAB(depth-1, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
 		
 			board.colPlayed[col]--;
 			board.board[board.colPlayed[col]][col] = 0;
 			
-			if (moveValue >= bestValue && 3 - col <= 3 - bestMove) {
+			if (moveValue > bestValue) {
 				bestValue = moveValue;
 				bestMove = col;
+			}
+			alpha = Math.max(alpha, bestValue);
+				if (beta <= alpha) {
+					break;
 			}
 		}
 		
@@ -267,7 +278,7 @@ public class AIPlayer {
 			else if (count == 3)
 				value = 16;
 			else if (count == 4)
-				value = 200000;
+				value = 10000;
 		}
 		else if (oppCount > 0) {
 			if (oppCount == 1)
@@ -277,7 +288,7 @@ public class AIPlayer {
 			else if (oppCount == 3)
 				value = -16;
 			else if (oppCount == 4)
-				value = -200000;
+				value = -10000;
 		}
 		
 		return value;

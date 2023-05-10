@@ -20,7 +20,7 @@ AI mode:
 
 	- 3 difficulties: (Trivial/Easy, Medium and Hard). 
 
-	- AI begins first. To change it select  “You“ in 1st Player. 
+	- AI begins first. To change it select  "You" in 1st Player. 
 
  
 
@@ -33,8 +33,9 @@ Hard it is 5.
 Dark Mode is selected option. To use Light Mode press the Light
 Mode button at the right on the MenuBar. 
 
-In History you can see every game played and if you press on the
-game it shows you a representation of how the game was played. 
+In History you can see every game played and if you press double
+click on the game it shows you a representation of how the game 
+was played. 
 
 PS: Key to winning is to anticipate your opponent's moves, keep
 your positions in the middle, keep an eye out for game winning

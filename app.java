@@ -11,8 +11,14 @@ import java.net.URL;
 import javax.swing.*;
 import javax.swing.UIManager;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class app implements KeyListener {
 	static JFrame frame;
@@ -85,8 +91,20 @@ public class app implements KeyListener {
 
 		JMenu player = new JMenu("1st Player");
 
-        JMenu history = new JMenu("History");
-        history.setBackground(Color.BLUE);
+        JButton history = new JButton("History");
+		history.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent act) {
+				showHistory();
+
+				frame.requestFocus();
+			}
+		});
+		history.setPreferredSize(player.getPreferredSize());
+		history.setBackground(player.getBackground());
+		history.setContentAreaFilled(false);
+		history.setBorderPainted(false);
+		Insets margin1 = history.getMargin();
+		history.setMargin(new Insets(margin1.top, -10, margin1.bottom, margin1.right));
 
 		JButton help = new JButton("Help");
 		help.addActionListener(new ActionListener() {
@@ -100,8 +118,8 @@ public class app implements KeyListener {
 		help.setBackground(player.getBackground());
 		help.setContentAreaFilled(false);
 		help.setBorderPainted(false);
-		Insets margin1 = help.getMargin();
-		help.setMargin(new Insets(margin1.top, -10, margin1.bottom, margin1.right));
+		Insets margin2 = help.getMargin();
+		help.setMargin(new Insets(margin2.top, -10, margin2.bottom, margin2.right));
 
 		darkMode = new JToggleButton("Light Mode", true);
 
@@ -110,7 +128,7 @@ public class app implements KeyListener {
 		darkMode.setContentAreaFilled(false);
 		darkMode.setBorderPainted(false);
 		Insets margin = darkMode.getMargin();
-		darkMode.setMargin(new Insets(margin.top, +330, margin.bottom, margin.right));
+		darkMode.setMargin(new Insets(margin.top, +320, margin.bottom, margin.right));
 		
         bar = new JMenuBar();
         bar.add(gameMenu);
@@ -121,6 +139,11 @@ public class app implements KeyListener {
         frame.setJMenuBar(bar);
 
 		ButtonGroup btns = new ButtonGroup();
+		rad1.setBackground(new Color(128, 128, 128));
+		rad1.setForeground(Color.BLACK);
+
+		rad2.setBackground(new Color(128, 128, 128));
+		rad2.setForeground(Color.BLACK);
 
 		if (!rad1.isSelected() && !rad2.isSelected())	
 			rad2.setSelected(true);
@@ -152,7 +175,7 @@ public class app implements KeyListener {
 			public void actionPerformed (ActionEvent e) {	
 				board.AIOpp = true;
 
-				AIPlayer.depth = 0;
+				AIPlayer.depth = 1;
 				createNewGame();
 			}
 		});
@@ -331,6 +354,152 @@ public class app implements KeyListener {
 		frame.setFocusable(true);
 	}
 
+	public void makeHistoryComponents () {
+		makeModern();
+
+		boardImg = new JLayeredPane();
+        boardImg.setPreferredSize(new Dimension(640, 480));
+		
+		// Make the background board.
+		URL imgURL = cls.getResource("./Extras/board.png");
+		ImageIcon imgBoard = new ImageIcon(imgURL);
+		JLabel img = new JLabel(imgBoard);
+		img.setBounds(0,0, imgBoard.getIconWidth(), imgBoard.getIconHeight());
+
+		boardImg.add(img);
+
+		// Make the menu for the app.
+        JMenu gameMenu = new JMenu("New Game");
+
+		JMenu player = new JMenu("1st Player");
+
+        JButton history = new JButton("History");
+		history.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent act) {
+				showHistory();
+
+				frame.requestFocus();
+			}
+		});
+		history.setPreferredSize(player.getPreferredSize());
+		history.setBackground(player.getBackground());
+		history.setContentAreaFilled(false);
+		history.setBorderPainted(false);
+		Insets margin1 = history.getMargin();
+		history.setMargin(new Insets(margin1.top, -10, margin1.bottom, margin1.right));
+
+		JButton help = new JButton("Help");
+		help.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent act) {
+				createHelpFrame();
+
+				frame.requestFocus();
+			}
+		});
+		help.setPreferredSize(player.getPreferredSize());
+		help.setBackground(player.getBackground());
+		help.setContentAreaFilled(false);
+		help.setBorderPainted(false);
+		Insets margin2 = help.getMargin();
+		help.setMargin(new Insets(margin2.top, -10, margin2.bottom, margin2.right));
+
+		darkMode = new JToggleButton("Light Mode", true);
+
+		darkMode.setPreferredSize(player.getPreferredSize());
+		darkMode.setBackground(player.getBackground());
+		darkMode.setContentAreaFilled(false);
+		darkMode.setBorderPainted(false);
+		Insets margin = darkMode.getMargin();
+		darkMode.setMargin(new Insets(margin.top, +320, margin.bottom, margin.right));
+		
+        bar = new JMenuBar();
+        bar.add(gameMenu);
+		bar.add(player);
+        bar.add(history);
+		bar.add(help);
+		bar.add(darkMode);
+        frame.setJMenuBar(bar);
+
+		ButtonGroup btns = new ButtonGroup();
+		rad1.setBackground(new Color(128, 128, 128));
+		rad1.setForeground(Color.BLACK);
+
+		rad2.setBackground(new Color(128, 128, 128));
+		rad2.setForeground(Color.BLACK);
+
+		if (!rad1.isSelected() && !rad2.isSelected())	
+			rad2.setSelected(true);
+
+		darkMode.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {
+				if (darkMode.isSelected()) {
+					setDarkMode();
+					darkMode.setText("Light Mode");
+				}
+				else {
+					setLightMode();
+					darkMode.setText("Dark Mode");
+				}
+			}
+		});
+		
+		JMenuItem pvp = new JMenuItem("2 Players");
+		pvp.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {	
+				board.AIOpp = false;
+				createNewGame();
+			}
+		});
+		gameMenu.add(pvp);
+
+		JMenuItem trivial = new JMenuItem("Trivial");
+		trivial.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {	
+				board.AIOpp = true;
+
+				AIPlayer.depth = 1;
+				createNewGame();
+			}
+		});
+		gameMenu.add(trivial);
+
+		JMenuItem medium = new JMenuItem("Medium");
+		medium.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {	
+				board.AIOpp = true;
+
+				AIPlayer.depth = 3;	
+				createNewGame();
+			}
+		});
+		gameMenu.add(medium);
+
+		JMenuItem hard = new JMenuItem("Hard");
+		hard.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent e) {	
+				board.AIOpp = true;
+
+				AIPlayer.depth = 5;
+				createNewGame();
+			}
+		});
+		gameMenu.add(hard);
+		
+		btns.add(rad1);
+		btns.add(rad2);
+
+		player.add(rad1);
+		player.add(rad2);
+
+		// Add the final board to the JFrame.
+        frame.add(boardImg);
+		playBoard = new board();
+		frame.pack();
+		frame.setVisible(true);
+		frame.addKeyListener(this);
+		frame.setFocusable(true);
+	}
+
 	// Play frame.
     public void play () {
 		frame = new JFrame("Connect four - v.1.0");
@@ -411,20 +580,24 @@ public class app implements KeyListener {
 		Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
 		String text = scanner.hasNext() ? scanner.next() : "";
 		JTextArea label = new JTextArea(text);
-		scanner.close();
-	
-		label.setEditable(false);
-		label.setFont(label.getFont().deriveFont(14f));
-	
 		JScrollPane helpPane = new JScrollPane(label);
-	
-		helpPanel.add(helpPane);
-
 		if (darkMode.isSelected()) {
 			label.setBackground(Color.DARK_GRAY);
 			label.setForeground(Color.WHITE);
 			helpPane.setBackground(Color.DARK_GRAY);
 		}
+		else {
+			label.setBackground(Color.WHITE);
+			label.setForeground(Color.BLACK);
+			helpPane.setBackground(Color.DARK_GRAY);
+		}
+		
+		scanner.close();
+	
+		label.setEditable(false);
+		label.setFont(label.getFont().deriveFont(14f));
+	
+		helpPanel.add(helpPane);
 	
 		helpDialog.add(helpPanel, BorderLayout.CENTER);
 		helpDialog.setVisible(true);
@@ -445,6 +618,164 @@ public class app implements KeyListener {
 		board.checkAI();
 	}
 
+	public void showHistory() {
+		frame.dispose();
+		frame = new JFrame("History");
+		frame.setBackground(new Color(128, 128, 128));
+	
+		// Create a JList to display the buttons
+		JList<File> fileList = new JList<>();
+		DefaultListModel<File> listModel = new DefaultListModel<>();
+
+		fileList.setBackground(new Color(128, 128, 128));
+	
+		String homePath = System.getProperty("user.home");
+		String directoryPath = homePath + "/Connect4";
+	
+		File directory = new File(directoryPath);
+	
+		// Get an array of File objects representing the files in the directory
+		File[] files = directory.listFiles();
+	
+		// Add each file to the ListModel
+		for (File file : files) {
+			listModel.addElement(file);
+		}
+		fileList.setModel(listModel);
+	
+		fileList.setCellRenderer(new DefaultListCellRenderer() {
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				File file = (File) value;
+	
+				// Create a button-like label for each file
+				JLabel label = new JLabel(createFileName(file));
+				label.setOpaque(true);
+				label.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+				label.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+	
+				return label;
+			}
+		});
+	
+		fileList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					JList<?> list = (JList<?>) e.getSource();
+					int index = list.locationToIndex(e.getPoint());
+					if (index >= 0) {
+						File selectedFile = listModel.getElementAt(index);
+						showGame(selectedFile);
+					}
+				}
+			}
+		});
+	
+		frame.setPreferredSize(new Dimension(500, 400));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(new JScrollPane(fileList));
+		frame.pack();
+		frame.setVisible(true);
+		frame.setFocusable(true);
+		frame.setResizable(false);
+	}	
+
+	private String createFileName (File file) {
+		StringBuilder JSONstr = new StringBuilder();
+		try (Scanner sc = new Scanner(file)) {
+			while (sc.hasNextLine()) {
+				String str = sc.nextLine();
+				JSONstr.append(str);
+				JSONstr.append("\n");
+			}
+		} catch (IOException ex) {
+			return null;
+		}
+	
+		StringBuilder message = new StringBuilder("");
+		JSONObject json = new JSONObject(JSONstr.toString());
+		message.append(json.getString("Date") + "   L: ");
+	
+		if (json.getString("Diff").equals("Hard")) {
+			message.append("Hard     ");
+		} else if (json.getString("Diff").equals("Medium")) {
+			message.append("Medium    ");
+		} else if (json.getString("Diff").equals("Trivial")) {
+			message.append("Trivial   ");
+		} else {
+			message.append("2Player ");
+		}
+	
+		message.append("   W:");
+	
+		if (json.getString("Winner").equals("Player")) {
+			message.append("P");
+		} else if (json.getString("Winner").equals("AI")) {
+			message.append("AI");
+		} else if (json.getString("Winner").equals("Player1")) {
+			message.append("P1");
+		} else {
+			message.append("P2");
+		}
+	
+		return message.toString();
+	}
+	
+	public void showGame(File file) {
+		frame.dispose();
+		frame = new JFrame("Connect four - v.1.0");
+		
+		frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+		makeHistoryComponents();
+		playHistory(file);
+        
+		((JComponent)frame.getRootPane()).setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		((JComponent) frame.getContentPane()).setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+	}
+
+	public void playHistory (File file) {
+		StringBuilder JSONstr = new StringBuilder();
+    	try(Scanner sc = new Scanner(file)) {
+			while( sc.hasNextLine() ) {
+				String str = sc.nextLine();
+				JSONstr.append(str);
+				JSONstr.append("\n");
+    		}
+    	} catch(IOException ex) {
+     	 	return;
+  	  	}
+
+		JSONObject json = new JSONObject(JSONstr.toString());
+		if (json.getString("First").equals("Player")) {
+			board.player = 1;
+			board.playerFirst = true;
+		}
+
+		JSONArray moveArr = json.getJSONArray("Moves");
+
+		int delay = 2000; // Delay in milliseconds (3 seconds)
+		AtomicInteger moves = new AtomicInteger(0); // Counter variable
+
+		Timer timer = new Timer(delay, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int currentMove = moves.getAndIncrement();
+
+				if (currentMove < moveArr.length()) {
+					board.move(moveArr.getInt(currentMove));
+				} else {
+					((Timer) e.getSource()).stop(); // Stop the timer when all moves are completed
+				}
+			}
+		});
+
+		timer.setInitialDelay(delay * moves.get()); // Set the initial delay based on the current move
+
+		timer.start();
+	}
+	
 	// Drop the yellow piece in the board.
 	public static void dropYellow(int row, int col) {
 	int xOffset = 90 * col;
@@ -567,13 +898,13 @@ public class app implements KeyListener {
 		String message;
 
 		if (board.AIOpp == false) {
-			if (board.player == 2)
+			if (board.player == 1)
 				message = "Player 1 Won!";
 			else
 				message = "Player 2 Won!";
 		}
 		else {
-			if (board.player == 2)
+			if (board.player == 1)
 				message = "You Won!";
 			else
 				message = "You Lost!";
