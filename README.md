@@ -24,3 +24,4 @@ The Connect4 application has the following dependencies:
 
   - Java Development Kit (JDK) 8 or higher <br/>
   - Java Swing Library <br/>
+  - org.json library
