@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import org.json.*;
 
+// Make the Connect4 folder in the home folder.
 public class fileSystem {
     public static void makeDirectory () {   
         String homePath = System.getProperty("user.home"); // specify the path of the new directory
@@ -20,6 +21,7 @@ public class fileSystem {
         }
     }
 
+    // Create the file for a currently completed game.
     public static void makeFile() {
         JSONObject obj;
         
@@ -55,6 +57,7 @@ public class fileSystem {
 		}
     }
 
+    // Make the JSON string to store the game's data.
     private static JSONObject makeString() {
         JSONObject obj = new JSONObject();
 

@@ -3,17 +3,19 @@ public class AIPlayer {
 	static int depth = 1;
 
 	// MinMax algorithm with alpha beta pruning.
-	public static int minimaxAB(int depth, int alpha, int beta, boolean maximizingPlayer) {
-		int score = evaluateScore();
+	public static double minimaxAB(int depth, double alpha, double beta, boolean maximizingPlayer) {
+		// int score = evaluateScore();
+		double score = evaluateScore();
 
 		// If depth equals zero or board is full return the evaluation of the board.		
-		if (depth == 0 || board.isFull() || score > 10000 || score < -10000) {
-			return evaluateScore();
+		if (depth == 0 || board.isFull() || score >= 10000 || score <= -10000) {
+			// return evaluateScore();
+			return score;
 		}
 	
 		// Maximizing player.
 		if (maximizingPlayer) {
-			int bestValue = Integer.MIN_VALUE;
+			double bestValue = -Double.MAX_VALUE;
 			for (int col = 0; col < 7; col++) {
 				if (board.colPlayed[col] == 6) {
 					continue;
@@ -22,7 +24,7 @@ public class AIPlayer {
 				board.board[board.colPlayed[col]][col] = 2;
 				board.colPlayed[col]++;
 
-				int value = minimaxAB(depth - 1, alpha, beta, false);
+				double value = minimaxAB(depth - 1, alpha, beta, false);
 
 				board.colPlayed[col]--;
 				board.board[board.colPlayed[col]][col] = 0;
@@ -37,8 +39,9 @@ public class AIPlayer {
 			}
 			return bestValue;
 		// Minimizing player.
-		} else {
-			int bestValue = Integer.MAX_VALUE;
+		} 
+		else {
+			double bestValue = Double.MAX_VALUE;
 			for (int col = 0; col < 7; col++) {
 				if (board.colPlayed[col] == 6) {
 					continue;
@@ -47,7 +50,7 @@ public class AIPlayer {
 				board.board[board.colPlayed[col]][col] = 1;
 				board.colPlayed[col]++;
 
-				int value = minimaxAB(depth - 1, alpha, beta, true);
+				double value = minimaxAB(depth - 1, alpha, beta, true);
 				
 				board.colPlayed[col]--;
 				board.board[board.colPlayed[col]][col] = 0;
@@ -67,10 +70,10 @@ public class AIPlayer {
 
 	// Calculate best move by calling the minmax algorithm from the opponent's point of view.
 	public static int calculateBestMove(int depth) {
-		int bestValue = -Integer.MAX_VALUE;
+		double bestValue = -Double.MAX_VALUE;
 		int bestMove = -1;
-		int moveValue;
-		int alpha = Integer.MIN_VALUE, beta = Integer.MAX_VALUE;
+		double moveValue;
+		double alpha = -Double.MAX_VALUE, beta = Double.MAX_VALUE;
 	
 		for (int col = 0; col < 7; col++) {
 			if (board.colPlayed[col] == 6) {
@@ -80,7 +83,7 @@ public class AIPlayer {
 			board.board[board.colPlayed[col]][col] = 2;
 			board.colPlayed[col]++;
 
-			moveValue = minimaxAB(depth-1, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
+			moveValue = minimaxAB(depth-1, alpha, beta, false);
 		
 			board.colPlayed[col]--;
 			board.board[board.colPlayed[col]][col] = 0;
@@ -99,7 +102,7 @@ public class AIPlayer {
 	}
 
 	// Evaluate the total score of the board's situation.
-    public static int evaluateScore() {
+   public static int evaluateScore() {
 		int totalValue = 0;
 
 		totalValue += calculateVerticalVal();

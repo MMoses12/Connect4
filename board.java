@@ -76,7 +76,8 @@ public class board {
 			if (AIOpp == true) {
 				if (player == 2) {
 					int val = AIPlayer.calculateBestMove(AIPlayer.depth);
-					
+					// double val[] = AIPlayer.minimax(AIPlayer.depth, -Double.MAX_VALUE, Double.MAX_VALUE, true);
+
 					move(val);
 				}
 			}

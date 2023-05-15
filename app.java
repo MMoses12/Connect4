@@ -32,12 +32,14 @@ public class app implements KeyListener {
 	static JRadioButtonMenuItem rad2 = new JRadioButtonMenuItem("AI");
 	static boolean keyPressed = false;
 
+	// Find the path of the class to find the Extras folder.
 	static Class<?> cls = app.class;
 	
 	// Main menu frame.
 	public app () {
 		menuFrame = new JFrame("Connect 4");
 
+		// Make the Nimbus feel.
 		makeModern();
 
 		menuImg = new JLayeredPane();
@@ -211,6 +213,7 @@ public class app implements KeyListener {
 
 		// Make the layout for the buttons on the image.
         img.setLayout(new GridLayout(1,7, 4, 4));
+
 		// Make the buttons for the columns.
         JButton btn1 = new JButton();
         btn1.setPreferredSize(new Dimension(80,80));
@@ -618,6 +621,7 @@ public class app implements KeyListener {
 		board.checkAI();
 	}
 
+	// Show the history games in JList.
 	public void showHistory() {
 		frame.dispose();
 		frame = new JFrame("History");
@@ -646,17 +650,20 @@ public class app implements KeyListener {
 		fileList.setCellRenderer(new DefaultListCellRenderer() {
 			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 				File file = (File) value;
-	
+		
 				// Create a button-like label for each file
 				JLabel label = new JLabel(createFileName(file));
 				label.setOpaque(true);
-				label.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
-				label.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
-	
+		
+				// Set the Nimbus look and feel colors
+				label.setBackground(isSelected ? UIManager.getColor("nimbusSelectionBackground") : UIManager.getColor("nimbusDisabledText"));
+				label.setForeground(isSelected ? UIManager.getColor("nimbusSelectedText") : UIManager.getColor("text"));
+		
 				return label;
 			}
 		});
-	
+		
+		
 		fileList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
@@ -679,6 +686,8 @@ public class app implements KeyListener {
 		frame.setResizable(false);
 	}	
 
+	// Change the name of the files to correspond to the date and time
+	// of the played game.
 	private String createFileName (File file) {
 		StringBuilder JSONstr = new StringBuilder();
 		try (Scanner sc = new Scanner(file)) {
@@ -720,6 +729,7 @@ public class app implements KeyListener {
 		return message.toString();
 	}
 	
+	// Show the game moves like they were done when playing.
 	public void showGame(File file) {
 		frame.dispose();
 		frame = new JFrame("Connect four - v.1.0");
@@ -735,6 +745,7 @@ public class app implements KeyListener {
 		((JComponent) frame.getContentPane()).setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 	}
 
+	// Play the history game.
 	public void playHistory (File file) {
 		StringBuilder JSONstr = new StringBuilder();
     	try(Scanner sc = new Scanner(file)) {
@@ -844,6 +855,7 @@ public class app implements KeyListener {
 		timer.start();
 	}
 
+	// Set dark mode for the app.
 	public void setDarkMode() {
 		// Set background color to dark gray
 		frame.getContentPane().setBackground(new Color(128, 128, 128));
@@ -868,6 +880,7 @@ public class app implements KeyListener {
 		bar.setForeground(Color.WHITE);
 	}
 
+	// Set light mode for the app.
 	public void setLightMode() {
 		// Set background color to light gray
 		frame.getContentPane().setBackground(new Color(210, 210, 210));
@@ -892,6 +905,7 @@ public class app implements KeyListener {
 		bar.setForeground(Color.BLACK);
 	}
 
+	// Throw a message in a new window.
 	public static void gameOverDialog() {
 		JDialog dialog = new JDialog(frame, "Game Over", true);
 		JLabel messageLabel;
@@ -936,6 +950,7 @@ public class app implements KeyListener {
 		dialog.setVisible(true);
 	}
 
+	// Make a window for multiple purposes with the wanted message.
 	public static void makeWindow(String message) {
 		JDialog dialog = new JDialog(frame, "", true);
 		JLabel messageLabel;
@@ -966,6 +981,7 @@ public class app implements KeyListener {
 		dialog.setVisible(true);
 	}
 
+	// Numbus feel for the app.
 	private static void makeModern () {
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
